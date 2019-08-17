@@ -28,7 +28,7 @@ public class IniSection {
 		this.section = section;
 	}
 
-	// public void setList(List<Object> list) {
-	// this.list = list;
-	// }
+	public void setList(List<Object> list) {
+		this.list = list;
+	}
 }

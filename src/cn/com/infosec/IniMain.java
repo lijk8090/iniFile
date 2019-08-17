@@ -4,19 +4,20 @@ public class IniMain {
 
 	public static void main(String[] args) throws Exception {
 		String filename = "src/cfg/config.ini";
+		String filename1 = "src/cfg/config1.ini";
 		String section = "log";
 		String key = "level";
 		String value = "debug";
 
 		IniFile iniFile = new IniFile(filename);
 
-		iniFile.readIniFile(null);
+		iniFile.readIniFile(filename);
 
-		System.out.println(iniFile.getIniFile(section, key));
-		iniFile.setIniFile(section, key, value);
-		System.out.println(iniFile.getIniFile(section, key));
+		System.out.println(iniFile.getIniKeyValue(section, key));
+		iniFile.setIniKeyValue(section, key, value);
+		System.out.println(iniFile.getIniKeyValue(section, key));
 
-		iniFile.writeIniFile(null);
+		iniFile.writeIniFile(filename1);
 	}
 
 }

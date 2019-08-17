@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.ini4j.Ini;
@@ -34,9 +35,24 @@ public class IniFile {
 		this.filename = filename;
 	}
 
-	// public void setList(List<Object> list) {
-	// this.list = list;
-	// }
+	public void setList(List<Object> list) {
+		this.list = list;
+	}
+
+	public void printIniFile(String filename) throws Exception {
+		Ini ini = new Ini(new FileReader(filename != null ? filename : this.filename));
+
+		for (String sectionName : ini.keySet()) {
+			System.out.println("[" + sectionName + "]");
+
+			Section section = ini.get(sectionName);
+			for (String keyName : section.keySet()) {
+				String valueName = section.get(keyName);
+
+				System.out.println(keyName + " = " + valueName.substring(0, valueName.indexOf(";")));
+			}
+		}
+	}
 
 	public List<Object> readIniFile(String filename) throws Exception {
 		Ini ini = new Ini(new FileReader(filename != null ? filename : this.filename));
@@ -48,7 +64,7 @@ public class IniFile {
 			for (String keyName : section.keySet()) {
 				String valueName = section.get(keyName);
 
-				IniKeyValue iniKeyValue = new IniKeyValue(keyName, valueName);
+				IniKeyValue iniKeyValue = new IniKeyValue(keyName, valueName.substring(0, valueName.indexOf(";")));
 				iniSection.getList().add(iniKeyValue);
 			}
 
@@ -58,7 +74,7 @@ public class IniFile {
 		return this.list;
 	}
 
-	public String getIniFile(String section, String key) throws Exception {
+	public String getIniKeyValue(String section, String key) throws Exception {
 
 		for (Object sectionValue : this.list) {
 			IniSection iniSection = (IniSection) sectionValue;
@@ -75,7 +91,7 @@ public class IniFile {
 		return null;
 	}
 
-	public void setIniFile(String section, String key, String value) throws Exception {
+	public boolean setIniKeyValue(String section, String key, String value) throws Exception {
 
 		for (Object sectionValue : this.list) {
 			IniSection iniSection = (IniSection) sectionValue;
@@ -85,9 +101,90 @@ public class IniFile {
 
 				if (section.equals(iniSection.getSection()) && key.equals(iniKeyValue.getKey())) {
 					iniKeyValue.setValue(value);
+					return true;
 				}
 			}
 		}
+
+		return false;
+	}
+
+	public boolean delIniSection(String section) throws Exception {
+
+		Iterator<Object> it = this.list.listIterator();
+		while (it.hasNext()) {
+			IniSection obj = (IniSection) it.next();
+
+			if (section.equals(obj.getSection())) {
+				it.remove();
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public boolean delIniKeyValue(String section, String key) throws Exception {
+
+		for (Object sectionValue : this.list) {
+			IniSection iniSection = (IniSection) sectionValue;
+
+			if (!section.equals(iniSection.getSection())) {
+				continue;
+			}
+
+			Iterator<Object> it = iniSection.getList().listIterator();
+			while (it.hasNext()) {
+				IniKeyValue obj = (IniKeyValue) it.next();
+
+				if (key.equals(obj.getKey())) {
+					it.remove();
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public boolean addIniSection(String section) throws Exception {
+
+		for (Object sectionValue : this.list) {
+			IniSection obj = (IniSection) sectionValue;
+
+			if (section.equals(obj.getSection())) {
+				return false;
+			}
+		}
+
+		IniSection iniSection = new IniSection(section);
+		this.list.add(iniSection);
+		return true;
+	}
+
+	public boolean addIniKeyValue(String section, String key, String value) throws Exception {
+
+		for (Object sectionValue : this.list) {
+			IniSection iniSection = (IniSection) sectionValue;
+
+			if (!section.equals(iniSection.getSection())) {
+				continue;
+			}
+
+			for (Object keyValue : iniSection.getList()) {
+				IniKeyValue obj = (IniKeyValue) keyValue;
+
+				if (key.equals(obj.getKey())) {
+					return false;
+				}
+			}
+
+			IniKeyValue iniKeyValue = new IniKeyValue(key, value);
+			iniSection.getList().add(iniKeyValue);
+			return true;
+		}
+
+		return false;
 	}
 
 	public void writeIniFile(String filename) throws Exception {
