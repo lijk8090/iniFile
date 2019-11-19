@@ -49,7 +49,13 @@ public class IniFile {
 			for (String keyName : section.keySet()) {
 				String valueName = section.get(keyName);
 
-				System.out.println(keyName + " = " + valueName.substring(0, valueName.indexOf(";")));
+				int index = valueName.indexOf(";");
+				if (index != -1) {
+					System.out.println(keyName + " = " + valueName.substring(0, valueName.indexOf(";")).trim());
+				} else {
+					System.out.println(keyName + " = " + valueName.trim());
+				}
+
 			}
 		}
 	}
@@ -64,7 +70,15 @@ public class IniFile {
 			for (String keyName : section.keySet()) {
 				String valueName = section.get(keyName);
 
-				IniKeyValue iniKeyValue = new IniKeyValue(keyName, valueName.substring(0, valueName.indexOf(";")));
+				IniKeyValue iniKeyValue;
+
+				int index = valueName.indexOf(";");
+				if (index != -1) {
+					iniKeyValue = new IniKeyValue(keyName, valueName.substring(0, index).trim());
+				} else {
+					iniKeyValue = new IniKeyValue(keyName, valueName.trim());
+				}
+
 				iniSection.getList().add(iniKeyValue);
 			}
 
